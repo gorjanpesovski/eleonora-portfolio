@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eleonora Smilenska — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Albert+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fcfaee;
+  --on-bg:#1d1b18;
+  --paper:#fbf8f2;
+  --ink:#1d1b18;
+  --muted:#6f6a60;
+  --line:#ddd5c6;
+  --tab-h:46px;
+  --tw:clamp(84px,17%,190px);
+  --step:5px;
+  --noise:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --sans:"Albert Sans",system-ui,sans-serif;
+  --serif:"Calistoga",Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--noise),var(--bg);color:var(--ink);font-family:var(--sans);font-weight:500;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+
+.strip{display:flex;justify-content:space-between;gap:12px;font:700 11px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.strip.foot{padding:22px 16px 28px;justify-content:center;font-weight:400;color:var(--on-bg)}
+.swatches{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px}
+.swatches label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.swatches input{width:30px;height:30px;padding:0;border:1.5px solid var(--on-bg);border-radius:50%;background:none;cursor:pointer;overflow:hidden}
+.swatches input::-webkit-color-swatch-wrapper{padding:0}
+.swatches input::-webkit-color-swatch{border:0;border-radius:50%}
+.swatches input::-moz-color-swatch{border:0;border-radius:50%}
+.swatches code{font:400 11px var(--sans);color:color-mix(in srgb,var(--on-bg) 55%,transparent)}
+
+.cabinet{height:100dvh;padding:calc(var(--tab-h) + 4 * var(--step)) 0 0;display:grid;grid-template-rows:minmax(0,1fr)}
+
+.folder{grid-area:1/1;position:relative;min-height:0;transform:translateY(calc(var(--d,0) * var(--step) * -1));transition:transform .5s cubic-bezier(.3,1.25,.5,1)}
+.folder[data-id=home]{--c:#14213d;--fg:#f5efc6}
+.folder[data-id=projects]{--c:#9ab87a;--fg:#f5efc6}
+.folder[data-id=skills]{--c:#b36c60;--fg:#f5efc6}
+.folder[data-id=about]{--c:#66140e;--fg:#f5efc6}
+.folder[data-id=contact]{--c:#4b4a67;--fg:#f5efc6}
+.lift{position:relative;height:100%;transform-origin:30% 100%}
+
+.tab{position:absolute;bottom:100%;left:calc((100% - var(--tw)) * var(--i) / 4);width:var(--tw);height:var(--tab-h);border:0;background:none;padding:0 14px;z-index:1;cursor:pointer;color:var(--fg);display:flex;align-items:center;justify-content:center;gap:8px;font:700 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;transition:filter .2s ease}
+.tab::before{content:"";position:absolute;inset:0 0 -3px;background:var(--noise),var(--c);border-radius:12px 12px 0 0;transform:perspective(70px) rotateX(9deg);transform-origin:50% 100%;z-index:-1}
+.tab .n{opacity:.6;font-weight:400}
+.tab[aria-selected=false]:hover{filter:brightness(1.12)}
+.tab:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+.body{position:relative;background:var(--noise),var(--c);border-radius:0;padding:10px 10px 12px;height:100%;display:flex;flex-direction:column;box-shadow:0 18px 40px -18px rgba(0,0,0,.35)}
+.body::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:3px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.28));pointer-events:none;opacity:clamp(0,4 - var(--d,0),1)}
+
+.sheet{position:relative;background:var(--paper);border-radius:4px;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:clamp(22px,4vw,52px);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.folder:not(.is-open) .sheet{visibility:hidden}
+
+
+.kicker{font:700 11px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+.sheet h1,.sheet h2{font-family:var(--serif);font-weight:400;letter-spacing:-.02em;line-height:.95;margin:0}
+.sheet h1{font-size:clamp(46px,8vw,104px)}
+.sheet h2{font-size:clamp(36px,5.5vw,64px)}
+.lead{font-size:clamp(17px,2vw,21px);line-height:1.5;max-width:56ch;color:#475569;margin:22px 0 0}
+
+.sheet.home{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.home .lead{margin-left:auto;margin-right:auto}
+
+.role{margin:24px 0 0;font:700 clamp(12px,1.4vw,14px)/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+.home .lead{margin-top:18px}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:30px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 24px;border-radius:999px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);font:700 15px/1 var(--sans);text-decoration:none;cursor:pointer;transition:transform .15s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--c);border-color:var(--c);color:var(--fg)}
+
+.cases{margin-top:30px}
+.case{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(20px,4vw,48px);padding:32px 0;border-top:1.5px solid #e6e0d3}
+.case-media{aspect-ratio:4/3;border-radius:12px;background:#efe8da;border:1px dashed #d3c9b5;display:grid;place-items:center;font:500 13px var(--sans);color:#475569}
+.case-media:has(img){border:0;background:none}
+.case-media:has(img){aspect-ratio:auto;align-self:start}
+.case-media img{width:auto;max-width:100%;height:auto;max-height:min(calc(100dvh - 260px),620px);border-radius:12px;display:block}
+.case .tag{margin:0;font:700 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#475569}
+.case h3{margin:8px 0 10px;font:400 clamp(26px,3vw,34px)/1.1 var(--serif);letter-spacing:-.01em}
+.case .summary{margin:0;font:500 16px/1.5 var(--sans)}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;margin:24px 0 0}
+.steps dt{margin:0 0 4px;font:700 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.steps dd{margin:0;font:500 14px/1.5 var(--sans);color:#475569}
+.steps .tools{display:flex;flex-wrap:wrap;gap:8px}
+.steps .tools img{width:36px;height:36px;padding:6px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:9px}
+
+
+.case-open{cursor:pointer}
+.case .more{display:inline-block;margin-top:22px;padding:0 0 2px;border:0;border-bottom:1.5px solid currentColor;background:none;font:700 15px/1.2 var(--sans);color:var(--ink);cursor:pointer}
+.case-open:hover .more{color:#475569}
+.facts{display:grid;gap:14px;margin:0}
+.facts dt{font:700 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#475569}
+.facts dd{margin:4px 0 0;font:500 15px/1.45 var(--sans)}
+
+dialog.project{width:min(1100px,94vw);max-width:none;max-height:92dvh;padding:0;border:0;border-radius:18px;background:var(--paper);color:var(--ink);box-shadow:0 30px 80px -30px rgba(0,0,0,.6);overflow:hidden}
+dialog.project::backdrop{background:rgba(20,18,16,.55);backdrop-filter:blur(3px)}
+dialog.project[open]{animation:pop-in .3s cubic-bezier(.2,.8,.3,1)}
+@keyframes pop-in{from{opacity:0;transform:translateY(16px) scale(.98)}}
+.p-inner{max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;padding:clamp(24px,5vw,56px)}
+.p-close{position:sticky;top:0;float:right;z-index:2;width:40px;height:40px;margin:-8px -8px 0 12px;border:1px solid var(--line);border-radius:50%;background:#fff;font:400 24px/1 var(--sans);color:var(--ink);cursor:pointer}
+.p-close:hover{background:var(--ink);color:var(--paper)}
+.p-head{padding-bottom:32px}
+.project .tag{margin:0;font:700 12px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#475569}
+.project h2{margin:10px 0 0;font:400 clamp(32px,4.5vw,52px)/1 var(--serif);letter-spacing:-.02em}
+.p-tagline{margin:12px 0 0;font:400 clamp(18px,2.2vw,24px)/1.3 var(--serif);color:#475569}
+.p-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;padding:40px 0;border-top:1.5px solid #e6e0d3}
+.p-text h3{margin:0 0 10px;font:700 13px/1.4 var(--sans);letter-spacing:.1em;text-transform:uppercase}
+.p-text h3:not(:first-child){margin-top:28px}
+.p-text p{margin:0;max-width:60ch;font:500 16px/1.6 var(--sans)}
+.p-photo{margin:0;text-align:center}
+.p-photo img{display:inline-block;max-width:100%;max-height:min(60dvh,520px);width:auto;height:auto;border-radius:12px;box-shadow:0 12px 30px -18px rgba(0,0,0,.45)}
+.p-photo figcaption{margin-top:10px;font:500 13px/1.4 var(--sans);color:#475569}
+.p-note{margin:8px 0 0;padding:16px 18px;border-radius:10px;background:#f1ece2;font:500 14px/1.5 var(--sans);color:#475569}
+
+.proj{max-width:1180px;margin:0 auto;padding:clamp(8px,2vw,24px) 0 clamp(40px,6vw,80px)}
+.pj-head{margin-bottom:clamp(20px,3vw,36px)}
+.pj-title{margin:0;font:400 clamp(48px,7vw,96px)/.95 var(--serif);letter-spacing:-.02em;color:#b5452b}
+.pj-sub{margin:14px 0 0;font:700 13px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#475569}
+.proj figure{margin:0}
+.pj-hero{margin:0 calc(clamp(22px,4vw,52px) * -.5) clamp(48px,7vw,96px)}
+.pj-hero img{display:block;width:100%;height:auto;max-height:72dvh;object-fit:contain}
+.pj-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,88px);align-items:center;margin-bottom:clamp(56px,8vw,112px)}
+.pj-row:last-child{margin-bottom:0}
+.pj-text{max-width:52ch}
+.pj-text p{margin:0 0 22px;font:500 14px/1.8 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:#2b2a26}
+.pj-text p:last-child{margin-bottom:0}
+.pj-device{justify-self:end;width:100%;max-width:520px;padding:10px;border-radius:26px;background:#2a2a2c;box-shadow:0 24px 50px -28px rgba(0,0,0,.6)}
+.pj-device img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:50% 40%;border-radius:18px}
+.pj-poster img{display:block;width:auto;max-width:100%;max-height:min(78dvh,760px);height:auto;box-shadow:0 24px 50px -30px rgba(0,0,0,.55)}
+.pj-facts{display:grid;gap:18px;margin:0 0 30px;padding-bottom:28px;border-bottom:1.5px solid #e6e0d3}
+.pj-facts dt{font:700 12px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#475569}
+.pj-facts dd{margin:4px 0 0;font:400 clamp(20px,2vw,24px)/1.3 var(--serif);color:var(--ink)}
+.pj-text p.pj-note{margin-top:8px;font-size:12px;letter-spacing:.06em;color:#475569;text-transform:none}
+
+.lang-switch{position:fixed;right:16px;bottom:16px;z-index:50;display:flex;gap:2px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:999px;box-shadow:0 6px 18px -8px rgba(0,0,0,.35)}
+.lang-switch button{border:0;background:none;padding:7px 12px;border-radius:999px;font:700 12px/1 var(--sans);letter-spacing:.06em;color:#475569;cursor:pointer}
+.lang-switch button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:26px;margin-top:38px}
+.card{position:relative;background:#fff;border:1px solid var(--line);padding:26px 22px 22px;box-shadow:0 2px 0 var(--line)}
+.card:nth-child(odd){transform:rotate(-.6deg)}
+.card:nth-child(even){transform:rotate(.5deg)}
+.card .clip{position:absolute;top:-18px;left:22px;width:16px;height:46px}
+.card h3{margin:8px 0 8px;font-family:var(--serif);font-weight:400;font-size:24px;letter-spacing:-.01em}
+.card p{margin:0;color:#4d4941;line-height:1.5;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font:400 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--ink);padding:6px 8px;border-radius:999px;background:#fff}
+
+.rows{margin-top:38px}
+.row{display:grid;grid-template-columns:minmax(140px,300px) 1fr;gap:16px 24px;padding:20px 0;border-top:1.5px solid #e6e0d3;align-items:center}
+.row .k{display:flex;flex-direction:column;gap:4px;font:700 18px/1.3 var(--sans);letter-spacing:-.01em}
+.row .item{font:500 16px/1.4 var(--sans);color:var(--ink)}
+.row .k .d{font:500 14px/1.45 var(--sans);letter-spacing:0;color:#475569}
+.row .chips{margin:0;align-items:center;gap:8px}
+.logo{width:52px;height:52px;display:grid;place-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;transition:transform .18s ease,box-shadow .18s ease}
+.logo:hover{transform:translateY(-3px);box-shadow:0 8px 16px -10px rgba(0,0,0,.4)}
+.logo img{width:30px;height:30px;object-fit:contain}
+[data-tip]{position:relative}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);white-space:nowrap;background:var(--ink);color:var(--paper);font:400 11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:7px 9px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:2}
+[data-tip]::before{content:"";position:absolute;left:50%;bottom:calc(100% + 3px);border:5px solid transparent;border-top-color:var(--ink);border-bottom:0;transform:translate(-50%,4px);opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:2}
+[data-tip]:hover::after,[data-tip]:hover::before{opacity:1;transform:translate(-50%,0)}
+.chips>[data-tip]:first-child::after{left:0;transform:translate(0,4px)}
+.chips>[data-tip]:first-child:hover::after{transform:translate(0,0)}
+.chip.lang{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;background:#fff;border-color:var(--line);transition:transform .18s ease,box-shadow .18s ease}
+.chip.lang:hover{transform:translateY(-3px);box-shadow:0 8px 16px -10px rgba(0,0,0,.4)}
+.chip.lang img{width:22px;height:22px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.val{display:inline-flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.copy{display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:9px;background:#fff;color:#475569;cursor:pointer;transition:transform .15s ease,color .15s ease}
+.copy:hover{transform:translateY(-2px)}
+.copy svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.copy.copied{color:#22a35a;border-color:#22a35a}
+[data-tip].show::after,[data-tip].show::before{opacity:1;transform:translate(-50%,0)}
+.row a,.row .plain{color:inherit;font-size:clamp(17px,2.2vw,22px);overflow-wrap:anywhere}
+
+.about{display:grid;grid-template-columns:1fr 260px;gap:clamp(24px,5vw,64px);align-items:start}
+.sub{font:400 clamp(24px,3vw,32px)/1.1 var(--serif);letter-spacing:-.01em;margin:48px 0 14px}
+.entries{display:grid}
+.entry{display:grid;grid-template-columns:1fr auto;gap:4px 24px;padding:16px 0;border-top:1.5px solid #e6e0d3}
+.entry .t{display:block;font:700 18px/1.3 var(--sans)}
+.entry .o{display:block;font:500 14px/1.45 var(--sans);color:#475569;margin-top:2px}
+.entry p{margin:8px 0 0;font:500 15px/1.5 var(--sans);color:var(--ink);max-width:62ch}
+.entry .when{font:500 14px/1.3 var(--sans);color:#475569;white-space:nowrap;padding-top:3px}
+.polaroid{position:relative;background:#fff;padding:14px 14px 48px;transform:rotate(3deg);box-shadow:0 10px 24px -10px rgba(0,0,0,.35);margin-top:20px;transition:transform .45s cubic-bezier(.3,1.4,.5,1),box-shadow .45s ease}
+.polaroid:hover{transform:rotate(0deg) translateY(-6px);box-shadow:0 18px 30px -14px rgba(0,0,0,.4)}
+.polaroid:hover .clip{animation:wiggle .6s ease}
+@keyframes wiggle{25%{transform:rotate(-9deg)}55%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}}
+.polaroid .ph{aspect-ratio:1;background:#e6ded0;display:grid;place-items:center;font:400 11px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.polaroid .clip{position:absolute;top:-22px;right:34px;width:16px;height:46px;transform-origin:50% 85%}
+
+@media (max-width:720px){
+  .home,.about{grid-template-columns:1fr}
+  .polaroid{max-width:240px;order:-1}
+  .entry{grid-template-columns:1fr}
+  .entry .when{order:-1;padding:0}
+  .row{grid-template-columns:1fr;gap:10px}
+  .case,.steps,.p-row{grid-template-columns:1fr}
+  .pj-row{grid-template-columns:1fr}
+  .pj-row-flip .pj-text{order:-1}
+  .pj-device{justify-self:stretch;max-width:none}
+  .pj-hero{margin-left:0;margin-right:0}
+  .p-row.flip .p-text{order:-1}
+}
+@media (max-width:520px){
+  :root{--tab-h:40px;--step:5px}
+  .tab{font-size:10px;padding:0 6px;letter-spacing:.04em}
+  .tab .n{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .folder,.tab{transition:none}
+  .polaroid,.logo,.copy,.chip.lang{transition:none}
+  .polaroid:hover .clip{animation:none}
+}
+</style>
+</head>
+<body>
+
+<main class="cabinet" role="tablist" aria-label="Razdelki" data-en-label="Sections">
+
+  <section class="folder" data-id="home" style="--i:0">
+    <div class="lift">
+      <button class="tab" role="tab"><span class="n">01</span><span data-en="Home">Domov</span></button>
+      <div class="body">
+        <div class="sheet home" role="tabpanel">
+          <h1><span id="greeting">Pozdravljeni</span>,<br><span data-en="I’m Eleonora.">sem Eleonora.</span></h1>
+          <p class="role" data-en="Digital marketing · content · email · social media">Digitalni marketing · vsebine · e-pošta · družbena omrežja</p>
+          <p class="lead" data-en="Master’s student in cultural studies and communication studies graduate with experience in sales, marketing and supplier relations.">Magistrska študentka kulturnih študij in diplomirana komunikologinja z izkušnjami v prodaji, trženju in odnosih z dobavitelji.</p>
+          <div class="actions"><button class="btn primary" data-go="projects" data-en="See projects">Poglej projekte</button><a class="btn" href="cv.pdf" download="Eleonora-Smilenska-CV.pdf" data-en="Download CV">Prenesi CV</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="folder" data-id="projects" style="--i:1">
+    <div class="lift">
+      <button class="tab" role="tab"><span class="n">02</span><span data-en="Projects">Projekti</span></button>
+      <div class="body">
+        <div class="sheet" role="tabpanel">
+          <div class="project-list">
+          <div class="cases">
+          <section class="proj proj-1" aria-labelledby="p1-title">
+            <header class="pj-head">
+              <h3 id="p1-title" class="pj-title">Barcaffè</h3>
+              <p class="pj-sub" data-en="Slovenia’s unofficial currency · paid media campaign">Slovenska neuradna valuta · kampanja v plačljivih medijih</p>
+            </header>
+            <figure class="pj-hero"><img src="images/barcaffe-carousel-cutout.png" alt="Carousel objava za Instagram s petimi diapozitivi: monstera, vintage stol in kolo za 200 g Barcaffè" data-en-alt="Instagram carousel with five slides: a monstera, a vintage chair and a bike for 200 g of Barcaffè"></figure>
+            <div class="pj-row">
+              <div class="pj-text">
+                <p data-en="In Slovenian second-hand groups, an unusual offer sometimes appears: a trade for 200 g of Barcaffè.">V slovenskih skupinah za prodajo rabljenih stvari se včasih pojavi nenavadna ponudba: menjava za 200 g Barcaffè.</p>
+                <p data-en="The campaign turns this habit into a story. Marketplace-style posts trade everyday items for coffee and tie the brand to local culture, driving awareness and sharing.">Kampanja to navado spremeni v zgodbo. Objave v slogu Facebook Marketplacea vsakdanje predmete menjajo za kavo in znamko povežejo z lokalno kulturo, kar spodbuja prepoznavnost in deljenje.</p>
+              </div>
+              <figure class="pj-device"><img src="images/barcaffe-meta-ad.webp" alt="Sponzorirana objava Barcaffè na Facebooku s komentarji o menjavi" data-en-alt="Sponsored Barcaffè post on Facebook with swap comments" loading="lazy"></figure>
+            </div>
+            <div class="pj-row pj-row-flip">
+              <figure class="pj-poster"><img src="images/barcaffe-poster.webp" alt="Plakat kampanje Barcaffè na zunanjem oglasnem panoju" data-en-alt="Barcaffè campaign poster on an outdoor billboard" loading="lazy"></figure>
+              <div class="pj-text">
+                <dl class="pj-facts"><div><dt data-en="Goal">Cilj</dt><dd data-en="Brand awareness and social media engagement">Prepoznavnost znamke in interakcije na družbenih omrežjih</dd></div><div><dt data-en="Audience">Ciljna skupina</dt><dd data-en="Adults aged 25–44 in Slovenia">Odrasli od 25 do 44 let v Sloveniji</dd></div><div><dt data-en="Channels">Kanali</dt><dd data-en="Facebook, Instagram, outdoor">Facebook, Instagram, zunanje oglaševanje</dd></div><div><dt data-en="Budget">Proračun</dt><dd data-en="€1,500 for 30 days (simulated)">1.500 € za 30 dni (simulacija)</dd></div></dl>
+                <p data-en="Performance would be tracked through reach, impressions, engagement rate, shares and cost per engagement. A/B tests of visuals and messages would show which versions work best.">Uspešnost bi merila z dosegom, prikazi, stopnjo interakcij, delitvami in stroškom na interakcijo. A/B-testi vizualov in sporočil bi pokazali, katere različice delujejo najbolje.</p>
+                <p class="pj-note" data-en="Independent concept project. Strategy and budget are hypothetical; no results are available.">Samostojni konceptualni projekt. Strategija in proračun sta hipotetična; rezultati niso na voljo.</p>
+              </div>
+            </div>
+          </section>
+<!--
+          <article class="case">
+            <div class="case-media"><span data-en="Image or screenshot">Slika ali posnetek zaslona</span></div>
+            <div class="case-body">
+              <p class="tag" data-en="Concept · 2026">Koncept · 2026</p>
+              <h3 data-en="Short-form video series">Serija kratkih videov</h3>
+              <p class="summary" data-en="A short-form video series for a local café, made for TikTok and Instagram Reels.">Serija kratkih videov za lokalno kavarno, prilagojena za TikTok in Instagram Reels.</p>
+              <dl class="steps"><div><dt data-en="Challenge">Izziv</dt><dd data-en="What did the café want? E.g. more young visitors.">Kaj je želel lokal doseči? Npr. več mladih obiskovalcev.</dd></div><div><dt data-en="Approach">Pristop</dt><dd data-en="Ideas, scripts, filming and editing, and a posting schedule.">Ideje, scenariji, snemanje in montaža ter urnik objav.</dd></div><div><dt data-en="Tools">Orodja</dt><dd class="tools"><img src="logos/capcut.svg" alt="CapCut" title="CapCut"><img src="logos/tiktok-light.svg" alt="TikTok" title="TikTok"><img src="logos/canva.svg" alt="Canva" title="Canva"></dd></div><div><dt data-en="Result">Rezultat</dt><dd data-en="Views, followers or saves.">Ogledi, sledilci ali shranjevanja.</dd></div></dl>
+            </div>
+          </article>
+          <article class="case">
+            <div class="case-media"><span data-en="Image or screenshot">Slika ali posnetek zaslona</span></div>
+            <div class="case-body">
+              <p class="tag" data-en="Concept · 2026">Koncept · 2026</p>
+              <h3 data-en="Meta ad campaign">Oglaševalska kampanja na Meti</h3>
+              <p class="summary" data-en="A paid campaign plan: target audience, ad creatives, budget and success metrics.">Načrt plačljive kampanje: ciljna skupina, oglasi, proračun in merila uspeha.</p>
+              <dl class="steps"><div><dt data-en="Challenge">Izziv</dt><dd data-en="The campaign goal and who it is for.">Cilj kampanje in komu je namenjena.</dd></div><div><dt data-en="Approach">Pristop</dt><dd data-en="Audience research, three ad creatives and a budget split.">Raziskava ciljne skupine, trije oglasi in razdelitev proračuna.</dd></div><div><dt data-en="Tools">Orodja</dt><dd class="tools"><img src="logos/meta.svg" alt="Meta Ads Manager" title="Meta Ads Manager"><img src="logos/canva.svg" alt="Canva" title="Canva"></dd></div><div><dt data-en="Result">Rezultat</dt><dd data-en="Reach, clicks or cost per result.">Doseg, klik ali cena na rezultat.</dd></div></dl>
+            </div>
+          </article>
+-->
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="folder" data-id="skills" style="--i:2">
+    <div class="lift">
+      <button class="tab" role="tab"><span class="n">03</span><span data-en="Skills">Veščine</span></button>
+      <div class="body">
+        <div class="sheet" role="tabpanel">
+          <h2><span data-en="skills">veščine</span></h2>
+          <div class="rows">
+            <div class="row"><div class="k"><span class="t" data-en="Office &amp; data">Pisarna in podatki</span><span class="d" data-en="Data processing &amp; reporting">Obdelava podatkov in poročanje</span></div><div class="chips">
+              <span class="logo" data-tip="Microsoft Word"><img src="logos/microsoft-word.svg" alt="Microsoft Word"></span>
+              <span class="logo" data-tip="Microsoft Excel"><img src="logos/microsoft-excel.svg" alt="Microsoft Excel"></span>
+              <span class="logo" data-tip="Microsoft PowerPoint"><img src="logos/microsoft-powerpoint.svg" alt="Microsoft PowerPoint"></span>
+            </div></div>
+            <div class="row"><div class="k"><span class="t" data-en="Social media &amp; email">Družbena omrežja in e-pošta</span><span class="d" data-en="Social media management">Upravljanje družbenih omrežij</span></div><div class="chips">
+              <span class="logo" data-tip="Meta Ads Manager"><img src="logos/meta.svg" alt="Meta Ads Manager"></span>
+              <span class="logo" data-tip="TikTok"><img src="logos/tiktok-light.svg" alt="TikTok"></span>
+              <span class="logo" data-tip="Buffer"><img src="logos/buffer.svg" alt="Buffer"></span>
+              <span class="logo" data-tip="ManyChat"><img src="logos/manychat.png" alt="ManyChat"></span>
+              <span class="logo" data-tip="MailerLite"><img src="logos/mailerlite.png" alt="MailerLite"></span>
+            </div></div>
+            <div class="row"><div class="k"><span class="t" data-en="SEO &amp; analytics">SEO in analitika</span><span class="d" data-en="SEO basics">Osnove SEO</span></div><div class="chips">
+              <span class="logo" data-tip="Google Search Console"><img src="logos/google-search-console.svg" alt="Google Search Console"></span>
+              <span class="logo" data-tip="Google Trends"><img src="logos/google-trends.png" alt="Google Trends"></span>
+            </div></div>
+            <div class="row"><div class="k"><span class="t" data-en="Content creation">Ustvarjanje vsebin</span></div><div class="chips">
+              <span class="logo" data-tip="WordPress"><img src="logos/wordpress.svg" alt="WordPress"></span>
+              <span class="logo" data-tip="Canva"><img src="logos/canva.svg" alt="Canva"></span>
+              <span class="logo" data-tip="CapCut"><img src="logos/capcut.svg" alt="CapCut"></span>
+            </div></div>
+            <div class="row"><div class="k"><span class="t" data-en="Artificial intelligence">Umetna inteligenca</span></div><div class="chips">
+              <span class="logo" data-tip="ChatGPT"><img src="logos/openai-chatgpt.svg" alt="ChatGPT"></span>
+              <span class="logo" data-tip="Gemini"><img src="logos/google-gemini.svg" alt="Gemini"></span>
+              <span class="logo" data-tip="Claude"><img src="logos/claude.svg" alt="Claude"></span>
+            </div></div>
+            <div class="row"><div class="k"><span class="t" data-en="Expertise">Strokovna znanja</span></div><div class="chips">
+              <span class="item" data-en="Market research, data analysis, sales strategy, supplier relations">Tržne raziskave, analiza podatkov, prodajne strategije, odnosi z dobavitelji</span>
+            </div></div>
+            <div class="row"><div class="k"><span class="t" data-en="Languages">Jeziki</span></div><div class="chips">
+              <span class="chip lang" data-tip="Živjo!"><img src="flags/si.svg" alt="Slovenščina" data-en-alt="Slovenian"><span data-en="C1">C1</span></span>
+              <span class="chip lang" data-tip="Здраво!"><img src="flags/mk.svg" alt="Makedonščina" data-en-alt="Macedonian"><span data-en="Native">Materni</span></span>
+              <span class="chip lang" data-tip="Hello!"><img src="flags/gb.svg" alt="Angleščina" data-en-alt="English"><span data-en="C1">C1</span></span>
+              <span class="chip lang" data-tip="Zdravo!"><img src="flags/rs.svg" alt="Srbščina" data-en-alt="Serbian"><span data-en="C1">C1</span></span>
+              <span class="chip lang" data-tip="Ciao!"><img src="flags/it.svg" alt="Italijanščina" data-en-alt="Italian"><span data-en="B1">B1</span></span>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="folder" data-id="about" style="--i:3">
+    <div class="lift">
+      <button class="tab" role="tab"><span class="n">04</span><span data-en="About me">O meni</span></button>
+      <div class="body">
+        <div class="sheet" role="tabpanel">
+          <div class="about">
+            <div>
+              <h2><span data-en="about me">o meni</span></h2>
+              <p class="lead" data-en="I’m a master’s student in cultural studies and a communication studies graduate from the Faculty of Social Sciences in Ljubljana, with experience in sales, marketing, supplier relations and administration.">Sem magistrska študentka kulturnih študij in diplomirana komunikologinja s Fakultete za družbene vede v Ljubljani. Izkušnje imam s prodajo, trženjem, odnosi z dobavitelji in administrativnim vodenjem.</p>
+              <p class="lead" data-en="I do my best work in fast-paced, goal-driven environments where I can combine market research, sales strategy and content creation. I write and speak fluently in four languages.">Najbolje se znajdem v dinamičnem, ciljno usmerjenem okolju, kjer lahko povežem tržne raziskave, prodajne strategije in ustvarjanje vsebin. Odlično se pisno in ustno izražam v štirih jezikih.</p>
+              <h3 class="sub" data-en="Work experience">Delovne izkušnje</h3>
+              <div class="entries">
+                <div class="entry"><div><span class="t" data-en="Sales advisor and assortment manager">Prodajna svetovalka in skrbnica asortimenta</span><span class="o" data-en="Max Perfect, Ljubljana">Max Perfect, Ljubljana</span><p data-en="Planning the assortment and ordering products, helping shape sales strategy and promotions, and creating social media posts in Canva.">Načrtovanje asortimenta in naročanje izdelkov, sodelovanje pri prodajni strategiji in promocijskih akcijah ter priprava objav za družbena omrežja v Canvi.</p></div><span class="when" data-en="Apr 2025 – present">apr. 2025 – danes</span></div>
+                <div class="entry"><div><span class="t" data-en="Procurement and administrative support">Skrbnica nabave in administrativne podpore</span><span class="o" data-en="Biotopic d.o.o., Ljubljana">Biotopic d.o.o., Ljubljana</span><p data-en="Managing supplier relationships, keeping documentation and delivery notes, ordering products and advising customers.">Upravljanje odnosov z dobavitelji, vodenje dokumentacije in dobavnic, naročanje izdelkov ter svetovanje strankam.</p></div><span class="when" data-en="Oct 2024 – Nov 2025">okt. 2024 – nov. 2025</span></div>
+                <div class="entry"><div><span class="t" data-en="Tourist information officer">Informatorka</span><span class="o" data-en="TIC, Tourist Information Centre, Ljubljana">TIC, Turistično informacijski center, Ljubljana</span><p data-en="Researching and analysing information to give visitors accurate answers, and communicating with local and international visitors in several languages.">Zbiranje in analiza podatkov za točne informacije obiskovalcem ter komunikacija z domačo in tujo javnostjo v več jezikih.</p></div><span class="when" data-en="Mar 2024 – Aug 2024">mar. 2024 – avg. 2024</span></div>
+                <div class="entry"><div><span class="t" data-en="Barista">Barista</span><span class="o" data-en="Zadruga Buna d.o.o., Ljubljana">Zadruga Buna d.o.o., Ljubljana</span><p data-en="Working independently and in a team in a fast-paced setting, managing time and delivering a high level of service.">Samostojno in timsko delo v dinamičnem okolju, upravljanje časa in visoka raven storitev za stranke.</p></div><span class="when" data-en="Oct 2021 – Sep 2022">okt. 2021 – sep. 2022</span></div>
+              </div>
+              <h3 class="sub" data-en="Education">Izobraževanje</h3>
+              <div class="entries">
+                <div class="entry"><div><span class="t" data-en="Master’s in Cultural Studies (in progress)">Magistrski študij kulturnih študij (v teku)</span><span class="o" data-en="Faculty of Social Sciences, University of Ljubljana">Fakulteta za družbene vede, Univerza v Ljubljani</span></div><span class="when" data-en="Oct 2026 – present">okt. 2026 – danes</span></div>
+                <div class="entry"><div><span class="t" data-en="BA in Communication Studies">Diplomirana komunikologinja (B.A.)</span><span class="o" data-en="Faculty of Social Sciences, University of Ljubljana">Fakulteta za družbene vede, Univerza v Ljubljani</span></div><span class="when" data-en="Oct 2020 – Sep 2024">okt. 2020 – sep. 2024</span></div>
+              </div>
+              <h3 class="sub" data-en="Certificates">Certifikati</h3>
+              <div class="entries">
+                <div class="entry"><div><span class="t" data-en="Email Automation Master Class">Email Automation Master Class</span><span class="o" data-en="MailerLite Academy">MailerLite Academy</span></div><span class="when" data-en="2026">2026</span></div>
+                <div class="entry"><div><span class="t" data-en="Getting Started with MailerLite">Getting Started with MailerLite</span><span class="o" data-en="MailerLite Academy">MailerLite Academy</span></div><span class="when" data-en="2026">2026</span></div>
+                <div class="entry"><div><span class="t" data-en="Facebook Marketing and Advertising">Facebook Marketing and Advertising</span><span class="o" data-en="Simplilearn SkillUP">Simplilearn SkillUP</span></div><span class="when" data-en="2025">2025</span></div>
+                <div class="entry"><div><span class="t" data-en="Marketing with Canva">Marketing with Canva</span><span class="o" data-en="Canva Design School">Canva Design School</span></div><span class="when" data-en="2025">2025</span></div>
+              </div>
+            </div>
+            <figure class="polaroid"><svg class="clip" viewBox="0 0 16 46" fill="none" stroke="#8a8a8a" stroke-width="1.6"><path d="M5 14v24a3.5 3.5 0 0 0 7 0V8a5 5 0 0 0-10 0v26"/></svg><div class="ph" data-en="Photo">Fotografija</div></figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="folder" data-id="contact" style="--i:4">
+    <div class="lift">
+      <button class="tab" role="tab"><span class="n">05</span><span data-en="Contact">Kontakt</span></button>
+      <div class="body">
+        <div class="sheet" role="tabpanel">
+          <h2><span data-en="get in touch.">pišite mi.</span></h2>
+          <div class="rows">
+            <div class="row"><span class="k" data-en="Email">E-pošta</span><span class="val"><a href="mailto:eleonorasmilenska01@gmail.com">eleonorasmilenska01@gmail.com</a><button type="button" class="copy" data-copy="eleonorasmilenska01@gmail.com" data-tip="Kopiraj" aria-label="Kopiraj e-poštni naslov"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg></button></span></div>
+            <div class="row"><span class="k" data-en="Phone">Telefon</span><a href="tel:+38669652822">+386 69 652 822</a></div>
+            <div class="row"><span class="k" data-en="Location">Lokacija</span><span class="plain" data-en="Ljubljana, Slovenia">Ljubljana, Slovenija</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!--
+<dialog class="project" id="project-barcaffe" aria-labelledby="project-barcaffe-title">
+  <div class="p-inner">
+    <button type="button" class="p-close" aria-label="Zapri" data-en-label="Close">×</button>
+    <header class="p-head"><p class="tag" data-en="Project 01 — Paid media campaign">Projekt 01 — Kampanja v plačljivih medijih</p><h2 id="project-barcaffe-title"><span data-en="Barcaffè: Slovenia’s unofficial currency.">Barcaffè: Slovenska neuradna valuta.</span></h2><p class="p-tagline" data-en="Some things aren’t for sale. But they are for Barcaffè.">Nekatere stvari niso naprodaj. So pa za Barcaffè.</p></header>
+    <section class="p-row"><div class="p-text"><h3 data-en="Insight">Vpogled</h3><p data-en="In Slovenian groups for selling and giving away second-hand items, an unusual offer sometimes appears: trading things for 200 g of Barcaffè. This recognisable habit inspired a campaign that presents coffee as part of everyday Slovenian life.">V slovenskih skupinah za prodajo in oddajo rabljenih stvari se včasih pojavi nenavadna ponudba: menjava izdelkov za 200 g Barcaffè. Ta prepoznavna navada je navdihnila kampanjo, ki kavo predstavlja kot del slovenske vsakdanjosti.</p><h3 data-en="Campaign idea">Ideja kampanje</h3><p data-en="The campaign mimics Facebook Marketplace posts in which people offer everyday items in exchange for Barcaffè. The aim is to connect the brand with local culture and to drive awareness and sharing.">Kampanja posnema objave na Facebook Marketplaceu, kjer ljudje ponujajo vsakdanje predmete v zameno za Barcaffè. Cilj je povezati blagovno znamko z lokalno kulturo ter spodbuditi prepoznavnost in deljenje vsebin.</p></div><figure class="p-photo"><img src="images/barcaffe-poster.webp" alt="Plakat kampanje Barcaffè na zunanjem oglasnem panoju" data-en-alt="Barcaffè campaign poster on an outdoor billboard" loading="lazy"><figcaption data-en="Outdoor billboard">Zunanji oglasni pano</figcaption></figure></section>
+    <section class="p-row flip"><figure class="p-photo"><img src="images/barcaffe-meta-ad.webp" alt="Sponzorirana objava Barcaffè na Facebooku" data-en-alt="Sponsored Barcaffè post on Facebook" loading="lazy"><figcaption data-en="Meta ad · Facebook &amp; Instagram">Oglas za Meta · Facebook in Instagram</figcaption></figure><div class="p-text"><h3 data-en="Strategy">Strategija</h3><dl class="facts"><div><dt data-en="Goal">Cilj</dt><dd data-en="increase brand awareness and social media engagement.">povečati prepoznavnost blagovne znamke in interakcije na družbenih omrežjih.</dd></div><div><dt data-en="Target audience">Ciljna skupina</dt><dd data-en="adults aged 25–44 in Slovenia.">odrasli med 25. in 44. letom v Sloveniji.</dd></div><div><dt data-en="Channels">Kanali</dt><dd data-en="Facebook, Instagram and outdoor advertising.">Facebook, Instagram in zunanje oglaševanje.</dd></div><div><dt data-en="Budget">Proračun</dt><dd data-en="€1,500 for 30 days (simulated).">1.500 € za 30 dni (simulacija).</dd></div></dl></div></section>
+    <section class="p-row"><div class="p-text"><h3 data-en="Measuring success">Merjenje uspešnosti</h3><p data-en="I would track performance through reach, impressions, engagement rate, shares and cost per engagement. A/B testing different visuals and messages would show which versions get the best response.">Uspešnost bi spremljala z dosegom, prikazi, stopnjo interakcij, delitvami in stroškom na interakcijo. Z A/B-testiranjem različnih vizualov in sporočil bi ugotavljala, katere različice dosežejo najboljši odziv.</p><h3 data-en="Visuals">Vizuali</h3><p data-en="Meta ads · Marketplace-style carousel post · Outdoor billboard">Oglasi za Meta · Carousel objava v slogu Marketplacea · Zunanji oglasni pano</p></div><figure class="p-photo"><img src="images/barcaffe-carousel.webp" alt="Pet diapozitivov carousel objave za Instagram" data-en-alt="Five slides of an Instagram carousel post" loading="lazy"><figcaption data-en="Marketplace-style carousel post">Carousel objava v slogu Marketplacea</figcaption></figure></section>
+    <p class="p-note" data-en="Independent concept project. The strategy and budget are hypothetical; campaign results are not available.">Samostojni konceptualni projekt. Strategija in proračun sta hipotetična; rezultati kampanje niso na voljo.</p>
+  </div>
+</dialog>
+-->
+
+<div class="lang-switch" role="group" aria-label="Jezik / Language"><button type="button" data-lang="sl">SL</button><button type="button" data-lang="en">EN</button></div>
+
+<!--
+<footer class="strip foot">
+  <div class="swatches">
+    <label><input type="color" data-for="home">Domov <code></code></label>
+    <label><input type="color" data-for="projects">Projekti <code></code></label>
+    <label><input type="color" data-for="skills">Veščine <code></code></label>
+    <label><input type="color" data-for="about">O meni <code></code></label>
+    <label><input type="color" data-for="contact">Kontakt <code></code></label>
+  </div>
+</footer>
+-->
+
+<script>
+const folders=[...document.querySelectorAll('.folder')];
+const byId=Object.fromEntries(folders.map(f=>[f.dataset.id,f]));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hashId=location.hash.slice(1).split('/')[0];
+const first=byId[hashId]?hashId:'home';
+let stack=[first,...folders.map(f=>f.dataset.id).filter(id=>id!==first)];
+let busy=false,queued=null;
+
+const part=(f,s)=>f.querySelector(s);
+
+function anim(el,frames,opts){
+  const a=el.animate(frames,{fill:'forwards',...opts,duration:reduce?1:opts.duration,delay:reduce?0:(opts.delay||0)});
+  return a.finished.then(()=>{a.commitStyles();a.cancel()});
+}
+
+function applyStack(){
+  stack.forEach((id,d)=>{
+    const f=byId[id];
+    f.style.setProperty('--d',d);
+    f.style.zIndex=folders.length-d;
+    part(f,'.tab').setAttribute('aria-selected',d===0);
+  });
+}
+
+async function pull(f){
+  const lift=part(f,'.lift');
+  const up='translateY(-64px) rotate(-.8deg)';
+  await anim(lift,[{transform:'none'},{transform:up}],{duration:300,easing:'cubic-bezier(.3,.6,.4,1)'});
+  stack=[f.dataset.id,...stack.filter(id=>id!==f.dataset.id)];
+  applyStack();
+  await anim(lift,[{transform:up},{transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.35,.5,1)'});
+}
+
+async function go(id){
+  if(!byId[id])return;
+  if(busy){queued=id;return}
+  if(id===stack[0])return;
+  busy=true;
+  history.replaceState(null,'','#'+id);
+  const prev=byId[stack[0]];
+  byId[id].classList.add('is-open');
+  await pull(byId[id]);
+  prev.classList.remove('is-open');
+  busy=false;
+  if(queued){const q=queued;queued=null;go(q)}
+}
+
+const hour=new Date().getHours();
+const part_of_day=hour>=5&&hour<12?0:hour>=12&&hour<18?1:2;
+const greetings={sl:['Dobro jutro','Dober dan','Dober večer'],en:['Good morning','Good afternoon','Good evening']};
+const texts=[...document.querySelectorAll('[data-en]')];
+texts.forEach(e=>e.dataset.sl=e.innerHTML);
+const alts=[...document.querySelectorAll('[data-en-alt]')];
+alts.forEach(e=>e.dataset.slAlt=e.alt);
+const cabinet=document.querySelector('.cabinet');
+cabinet.dataset.slLabel=cabinet.getAttribute('aria-label');
+const labels=[...document.querySelectorAll('[data-en-label]:not(.cabinet)')];
+labels.forEach(e=>e.dataset.slLabel=e.getAttribute('aria-label'));
+
+function setLang(lang){
+  const en=lang==='en';
+  document.documentElement.lang=lang;
+  texts.forEach(e=>{if(en)e.textContent=e.dataset.en;else e.innerHTML=e.dataset.sl;if(en&&e.hasAttribute('data-br'))e.innerHTML=e.dataset.en.split(' / ').map(x=>x.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c])).join('<br>')});
+  alts.forEach(e=>e.alt=en?e.dataset.enAlt:e.dataset.slAlt);
+  cabinet.setAttribute('aria-label',en?cabinet.dataset.enLabel:cabinet.dataset.slLabel);
+  labels.forEach(e=>e.setAttribute('aria-label',en?e.dataset.enLabel:e.dataset.slLabel));
+  document.getElementById('greeting').textContent=greetings[lang][part_of_day];
+  document.querySelectorAll('.lang-switch button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
+  try{localStorage.setItem('lang',lang)}catch(e){}
+}
+
+let saved=null;
+try{saved=localStorage.getItem('lang')}catch(e){}
+setLang(saved||'sl');
+document.querySelectorAll('.lang-switch button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+const copyTips={sl:['Kopiraj','Kopirano!','Kopiraj e-poštni naslov'],en:['Copy','Copied!','Copy email address']};
+const copyBtn=document.querySelector('.copy');
+function copyLabels(){const t=copyTips[document.documentElement.lang]||copyTips.sl;copyBtn.dataset.tip=copyBtn.classList.contains('copied')?t[1]:t[0];copyBtn.setAttribute('aria-label',t[2])}
+copyBtn.addEventListener('click',async()=>{
+  const text=copyBtn.dataset.copy;
+  try{await navigator.clipboard.writeText(text)}catch(e){
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy')}catch(_){}
+    ta.remove();
+  }
+  copyBtn.classList.add('copied','show');copyLabels();
+  clearTimeout(copyBtn._t);
+  copyBtn._t=setTimeout(hideCopied,1000);
+});
+function hideCopied(){
+  clearTimeout(copyBtn._t);
+  copyBtn.classList.remove('show');
+  copyBtn._t=setTimeout(()=>{copyBtn.classList.remove('copied');copyLabels()},160);
+}
+copyBtn.addEventListener('mouseleave',()=>{if(copyBtn.classList.contains('copied'))hideCopied()});
+copyLabels();
+document.querySelectorAll('.lang-switch button').forEach(b=>b.addEventListener('click',copyLabels));
+
+/*
+document.querySelectorAll('.case-open').forEach(card=>card.addEventListener('click',()=>{
+  const dialog=document.getElementById('project-'+card.dataset.project);
+  if(!dialog)return;
+  dialog.showModal();
+  dialog.querySelector('.p-inner').scrollTop=0;
+}));
+document.querySelectorAll('dialog.project').forEach(dialog=>{
+  dialog.querySelector('.p-close').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+});
+*/
+
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+
+folders.forEach(f=>{
+  part(f,'.tab').addEventListener('click',()=>go(f.dataset.id));
+});
+byId[first].classList.add('is-open');
+applyStack();
+
+function inkFor(hex){
+  const [r,g,b]=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:((v+.055)/1.055)**2.4);
+  return .2126*r+.7152*g+.0722*b>.2?'#231815':'#f5efc6';
+}
+
+document.querySelectorAll('.swatches input').forEach(inp=>{
+  const f=byId[inp.dataset.for];
+  const code=inp.parentElement.querySelector('code');
+  inp.value=getComputedStyle(f).getPropertyValue('--c').trim();
+  code.textContent=inp.value;
+  inp.addEventListener('input',()=>{
+    f.style.setProperty('--c',inp.value);
+    f.style.setProperty('--fg',inkFor(inp.value));
+    code.textContent=inp.value;
+  });
+});
+
+document.querySelector('.cabinet').addEventListener('keydown',e=>{
+  if(!e.target.classList.contains('tab'))return;
+  const ids=folders.map(f=>f.dataset.id);
+  const i=ids.indexOf(e.target.closest('.folder').dataset.id);
+  const n=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:null;
+  if(n===null)return;
+  const t=ids[(n+ids.length)%ids.length];
+  part(byId[t],'.tab').focus();
+  go(t);
+});
+</script>
+</body>
+</html>
